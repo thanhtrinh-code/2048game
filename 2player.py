@@ -2,7 +2,7 @@ import pygame
 import random
 
 pygame.init()
-# Implementation: Game Over Screen (Win, Lose, Tie), probability for higher number, menu screen, music, Restart game
+# Implementation:  menu screen, music, Restart game
 # Initial set up
 WIDTH = 800
 HEIGHT = 500
@@ -55,6 +55,10 @@ def new_pieces(board):
             count += 1
             if random.randint(1, 10) == 10:
                 board[row][col] = 4
+            elif random.randint(1,3) == 3:
+                board[row][col] = 8
+            elif random.randint(1,4) == 4:
+                board[row][col] = 16
             else:
                 board[row][col] = 2
     if count < 1:
@@ -238,7 +242,15 @@ def take_turn(direc, board):
                         board[i][3 - j + shift] = 0
                         merged[i][4 - j + shift] = True
     return board
-
+def draw_game_over():
+    pygame.draw.rect(screen, 'black', [250, 50, 300, 100], 0, 10)
+    if score_player1 > score_player2:
+        game_over_text = font.render("Player 1 won", True, 'white')
+    elif score_player2 > score_player1:
+        game_over_text = font.render("Player 2 won", True, 'white')
+    else:
+        game_over_text = font.render("It was a tie", True, 'white')
+    screen.blit(game_over_text, (320, 65))
 
 # Main game loop
 run = True
@@ -254,7 +266,6 @@ while run:
         board_values_player1, game_over_player1 = new_pieces(board_values_player1)
         spawn_new_player1 = False
         init_count_player1 += 1
-
     if spawn_new_player2 or init_count_player2 < 2:
         board_values_player2, game_over_player2 = new_pieces(board_values_player2)
         spawn_new_player2 = False
@@ -263,12 +274,14 @@ while run:
     if direction_player1 != '':
         board_values_player1 = take_turn(direction_player1, board_values_player1)
         spawn_new_player1 = True
-        direction_player1 = ''
-    
+        direction_player1 = '' 
     if direction_player2 != '':
         board_values_player2 = take_turn(direction_player2, board_values_player2)
         spawn_new_player2 = True
         direction_player2 = ''
+
+    if game_over_player1 and game_over_player2:
+        draw_game_over()
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
